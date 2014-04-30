@@ -17,6 +17,8 @@ namespace ChildsTubeConsoleServer
 
         private static string UsageString { get; set; }
 
+        private static string ThreadPoolInformationString { get; set; }
+
         static void Main(string[] args)
         {
             ConfigurationXMLObject = XElement.Load(Definitions.ConfigurationFileName);
@@ -30,6 +32,7 @@ namespace ChildsTubeConsoleServer
 
             InitObject(ConfigurationXMLObject);
 
+            Console.WriteLine("Listening... type 'help' for further usage.");
             while (true)
             {
                 string strCommand = Console.ReadLine();
@@ -45,6 +48,10 @@ namespace ChildsTubeConsoleServer
                 string strUsage;
                 Helper.ReadValue(consoleChunk, "Usage", out strUsage);
                 UsageString = strUsage;
+
+                string strThreadPoolInformation;
+                Helper.ReadValue(consoleChunk, "Usage", out strThreadPoolInformation);
+                ThreadPoolInformationString = strThreadPoolInformation;
             }
         }
 

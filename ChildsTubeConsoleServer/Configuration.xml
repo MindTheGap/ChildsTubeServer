@@ -1,7 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Configuration>
   <Console>
-    <Usage>Please enter one of the following options:\ntp: Prints thread pool information.\nm: Prints last 10 messages.</Usage>
+    <Usage>Please enter one of the following options:
+  tp: Prints thread pool information.
+  m: Prints last 10 messages.</Usage>
+    <ThreadPoolInformation>Max Threads: {0}</ThreadPoolInformation>
   </Console>
   <LogManager>
     <RelativePath>D:\ChildsTubeLog</RelativePath>
