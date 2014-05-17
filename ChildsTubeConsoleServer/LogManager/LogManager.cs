@@ -84,7 +84,9 @@ namespace ChildsTubeConsoleServer.LogManagerNS
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine(message);
             FailureLogFileStream.WriteLine(message);
+            FailureLogFileStream.WriteLine("---");
             AllLogFileStream.WriteLine(message);
+            AllLogFileStream.WriteLine("---");
             Console.ForegroundColor = originalColor;
         }
 
@@ -94,7 +96,9 @@ namespace ChildsTubeConsoleServer.LogManagerNS
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine(message);
             WarningLogFileStream.WriteLine(message);
+            WarningLogFileStream.WriteLine("---");
             AllLogFileStream.WriteLine(message);
+            AllLogFileStream.WriteLine("---");
             Console.ForegroundColor = originalColor;
         }
 
@@ -104,7 +108,9 @@ namespace ChildsTubeConsoleServer.LogManagerNS
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine(message);
             SuccessLogFileStream.WriteLine(message);
+            SuccessLogFileStream.WriteLine("---");
             AllLogFileStream.WriteLine(message);
+            AllLogFileStream.WriteLine("---");
             Console.ForegroundColor = originalColor;
         }
     }

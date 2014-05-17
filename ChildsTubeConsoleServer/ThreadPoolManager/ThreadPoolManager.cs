@@ -6,11 +6,15 @@ using System.Net;
 using System.Collections.ObjectModel;
 using System.Threading;
 using System.IO;
+using ChildsTubeConsoleServer.DB;
+using ChildsTubeConsoleServer.Helpers;
 using Newtonsoft.Json;
 using System.Diagnostics;
 using System.Dynamic;
 using ChildsTubeConsoleServer.ViewModel;
 using ChildsTubeConsoleServer.Communications;
+using ChildsTubeConsoleServer.Communications.Models;
+using Newtonsoft.Json.Linq;
 
 namespace ChildsTubeConsoleServer.ThreadPoolManagerNS
 {
@@ -18,9 +22,13 @@ namespace ChildsTubeConsoleServer.ThreadPoolManagerNS
     {
         MainWindowViewModel MainWindowViewModel { get; set; }
 
+        public CommunicationsManager CommunicationsManager { get; set; }
+
         public ThreadPoolManager(MainWindowViewModel mainWindowViewModel)
         {
             this.MainWindowViewModel = mainWindowViewModel;
+
+            CommunicationsManager = new CommunicationsManager(mainWindowViewModel);
         }
 
         public void AddTask(HttpListenerContext context)
@@ -30,33 +38,41 @@ namespace ChildsTubeConsoleServer.ThreadPoolManagerNS
 
         private void ThreadPoolWorkerCallback(object state)
         {
-            HttpListenerContext context = state as HttpListenerContext;
-            HttpListenerRequest request = context.Request;
+            var context = state as HttpListenerContext;
+            if (context == null) return;
+
+            var request = context.Request;
             if (request != null && request.HasEntityBody)
             {
-                using (Stream body = request.InputStream) // here we have data
+                using (var body = request.InputStream) // here we have data
                 {
-                    using (StreamReader reader = new StreamReader(body, request.ContentEncoding))
+                    using (var reader = new StreamReader(body, request.ContentEncoding))
                     {
                         string strData = reader.ReadToEnd();
 
                         dynamic dynamicObject = JsonConvert.DeserializeObject(strData);
 
-                        Nullable<CommunicationsHelper.UserToServerMessage> type = dynamicObject.type;
+                        CommunicationsHelper.UserToServerMessage? type = dynamicObject.Type;
                         if (type != null)
                         {
                             switch (type)
                             {
-                                case CommunicationsHelper.UserToServerMessage.GetTvSeriesDetails:
+                                case CommunicationsHelper.UserToServerMessage.GetAllTvSeries:
 
-                                    //HandleSearchResultsMessage(dynamicObject, context);
+                                    CommunicationsManager.HandleGetAllTvSeries(dynamicObject, context);
 
                                     break;
 
-                                case CommunicationsHelper.UserToServerMessage.SearchPhrase:
+                                case CommunicationsHelper.UserToServerMessage.SearchTvSeries:
 
-                                    //HandleGetAllJoinedWeddingsMessage(dynamicObject, context);
+                                    CommunicationsManager.HandleSearchTvSeries(dynamicObject, context);
                                     
+                                    break;
+
+                              case CommunicationsHelper.UserToServerMessage.GetEpisodesForTvSeries:
+
+                                    CommunicationsManager.HandleGetEpisodesForTvSeries(dynamicObject, context);
+
                                     break;
 
                                 default:
@@ -64,27 +80,7 @@ namespace ChildsTubeConsoleServer.ThreadPoolManagerNS
                                     MainWindowViewModel.LogManager.PrintWarningMessage("User --> Server: Unknown");
 
                                     break;
-
-                                //case Helpers.Helpers.MessageTypeFromClient.RetreiveLastMessages:
-
-                                //    HandleRetreiveLastMessagesMessage(strData, context);
-
-                                //    break;
-
-
-
-                                //case Helpers.Helpers.MessageTypeFromClient.RetreiveTopHits:
-
-
-
-                                //    break;
-
-
-                                //case Helpers.Helpers.MessageTypeFromClient.PushGreeting:
-
-                                //    HandlePushGreetingMessage(strData, context);
-
-                                //    break;
+                                
                             }
                         }
                     }
@@ -92,13 +88,13 @@ namespace ChildsTubeConsoleServer.ThreadPoolManagerNS
             }
         }
 
-       
-        //private void HandleGetAllJoinedWeddingsMessage(dynamic dynamicObject, HttpListenerContext context)
+
+        //private void HandleGetAllTvSeries(dynamic dynamicObject, HttpListenerContext context)
         //{
         //    try
         //    {
         //        dynamic sendFlexible = new ExpandoObject();
-        //        sendFlexible.Type = Helpers.Helpers.MessageTypeToClient.GetAllJoinedWeddings;
+        //        sendFlexible.Type = CommunicationsHelper.ServerToUserMessage.OK;
         //        var weddings = from wedding in MainWindowViewModel.dataEntities.Wedding
         //                       where wedding.Member.First_Name.Contains("Chen") || wedding.Member1.First_Name.Contains("Chen") || wedding.Member.First_Name.Contains("Eti") || wedding.Member1.First_Name.Contains("Eti")
         //                       select wedding;
@@ -204,59 +200,7 @@ namespace ChildsTubeConsoleServer.ThreadPoolManagerNS
         //    }
         //}
 
-        //private void HandleRegistrationMessage(dynamic dynamicObject, HttpListenerContext context)
-        //{
-        //    try
-        //    {
-        //        if (dynamicObject != null)
-        //        {
-        //            Member userOut = null;
-        //            if (UserExists(MainWindowViewModel.dataEntities.Member.ToList(), dynamicObject.Email, out userOut) == true)
-        //            {
-        //                Debug.Assert(userOut != null);
-
-        //                if (userOut.Is_Blocked == true)
-        //                {
-        //                    LogAddMessage("Received message from blocked user: " + dynamicObject.UserFirstName + " " + dynamicObject.UserLastName + ". ignoring.");
-
-        //                    dynamic sendFlexible = new ExpandoObject();
-        //                    sendFlexible.Type = Helpers.Helpers.MessageTypeToClient.Error;
-        //                    sendFlexible.ErrorType = Helpers.Helpers.ErrorType.UserAlreadyExists;
-
-        //                    SendMessage(context, sendFlexible);
-
-        //                    return;
-        //                }
-        //            }
-        //            else // user doesn't exist
-        //            {
-        //                if (dynamicObject.UserFirstName != null && dynamicObject.UserLastName != null)
-        //                {
-        //                    LogAddMessage("Adding user (" + dynamicObject.UserFirstName + " " + dynamicObject.UserLastName + ")!");
-        //                    MainWindowViewModel.dataEntities.Member.Add(new Member()
-        //                    {
-        //                        First_Name = dynamicObject.UserFirstName,
-        //                        Last_Name = dynamicObject.UserLastName,
-        //                        Is_Blocked = false,
-        //                        Email = dynamicObject.Email,
-        //                        Token_ID = dynamicObject.DeviceToken,
-        //                        Permission_ID = 5
-        //                    });
-        //                    MainWindowViewModel.SaveDBData();
-
-        //                    dynamic sendFlexible = new ExpandoObject();
-        //                    sendFlexible.Type = Helpers.Helpers.MessageTypeToClient.AOK;
-
-        //                    SendMessage(context, sendFlexible);
-        //                }
-        //            }
-        //        }
-        //    }
-        //    catch (Exception exception)
-        //    {
-        //        LogAddMessage("Message has exception: " + exception.Message + ". InnerMessage: " + exception.InnerException);
-        //    }
-        //}
+        
 
         private void SendMessage(HttpListenerContext context, dynamic dynamicObject)
         {

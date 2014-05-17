@@ -45,6 +45,7 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
+    <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -54,6 +55,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Communications\CommunicationsHelper.cs" />
+    <Compile Include="Communications\CommunicationsManager.cs" />
+    <Compile Include="Communications\Models\TvSeries.cs" />
+    <Compile Include="ConsoleManager\ConsoleManager.cs" />
     <Compile Include="DB\DBModel.Context.cs">
       <DependentUpon>DBModel.Context.tt</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -75,7 +79,7 @@
     <Compile Include="DB\TV_Series.cs">
       <DependentUpon>DBModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="Helpers\definitions.cs" />
+    <Compile Include="Helpers\Definitions.cs" />
     <Compile Include="Helpers\Helper.cs" />
     <Compile Include="LogManager\LogManager.cs" />
     <Compile Include="MainWindow\MainWindowViewModel.cs" />

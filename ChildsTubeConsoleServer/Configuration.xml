@@ -4,7 +4,7 @@
     <Usage>Please enter one of the following options:
   tp: Prints thread pool information.
   m: Prints last 10 messages.</Usage>
-    <ThreadPoolInformation>Max Threads: {0}</ThreadPoolInformation>
+    <ThreadPoolInformation>Max Threads: {0}, Completion Threads: {1}.</ThreadPoolInformation>
   </Console>
   <LogManager>
     <RelativePath>D:\ChildsTubeLog</RelativePath>

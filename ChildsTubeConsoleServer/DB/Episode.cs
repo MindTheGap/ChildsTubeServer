@@ -14,15 +14,12 @@ namespace ChildsTubeConsoleServer.DB
     
     public partial class Episode
     {
-        public Episode()
-        {
-            this.TV_Series = new HashSet<TV_Series>();
-        }
-    
         public int EpisodeID { get; set; }
+        public int TvSeriesID { get; set; }
         public int EpisodeNumber { get; set; }
+        public string URLPath { get; set; }
         public Nullable<int> SeriesNumber { get; set; }
     
-        public virtual ICollection<TV_Series> TV_Series { get; set; }
+        public virtual TV_Series TV_Series { get; set; }
     }
 }

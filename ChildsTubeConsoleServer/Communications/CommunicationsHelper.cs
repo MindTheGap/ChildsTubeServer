@@ -10,8 +10,9 @@ namespace ChildsTubeConsoleServer.Communications
     {
         public enum UserToServerMessage
         {
-            GetTvSeriesDetails,
-            SearchPhrase
+            GetAllTvSeries,
+            SearchTvSeries,
+            GetEpisodesForTvSeries
         }
 
         public enum ServerToUserMessage
